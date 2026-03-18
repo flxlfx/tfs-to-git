@@ -54,7 +54,7 @@ git      →  cria um commit por changeset com autor e data originais
 Sem instalação. Basta baixar o script:
 
 ```powershell
-git clone https://github.com/sua-org/tfs-to-git.git
+git clone https://github.com/flxlfx/tfs-to-git.git
 ```
 
 Permitir execução de scripts locais (se necessário):
@@ -275,7 +275,7 @@ cd C:\migration\order-service
 git log --oneline | Measure-Object          # confirma total de commits
 git log --pretty="%an <%ae>" | Sort -Unique # confirma autores
 
-git remote add origin https://github.com/sua-org/order-service.git
+git remote add origin https://github.com/flxlfx/order-service.git
 git push origin master --force
 ```
 
