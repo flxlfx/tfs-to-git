@@ -362,6 +362,111 @@ O tempo varia conforme velocidade da rede e tamanho dos arquivos. Para históric
 
 ---
 
+## Corrigindo autores após a migração com git-filter-repo
+
+Use esse fluxo quando a migração já foi feita mas os autores ficaram errados
+(emails `@unknown.com`, nomes de login curtos, etc.) e você precisa reescrever
+o histórico sem refazer tudo do zero.
+
+### Instalação do git-filter-repo
+
+```bash
+pip install git-filter-repo
+```
+
+> Requer Python 3.x. Verifique com `git filter-repo --version`.
+
+---
+
+### Caso A — Trocar um email específico
+
+```bash
+git filter-repo \
+  --email-callback 'return email.replace(b"jdoe@unknown.com", b"john.doe@mycompany.com")'
+```
+
+---
+
+### Caso B — Trocar vários emails de uma vez com um arquivo de mapeamento
+
+Crie o arquivo `mailmap.txt` (um mapeamento por linha):
+
+```
+john.doe@mycompany.com <jdoe@unknown.com>
+alice.smith@mycompany.com <asmith@unknown.com>
+robert.johnson@mycompany.com <rjohnson@unknown.com>
+mary.williams@mycompany.com <CORP\mwilliams@unknown.com>
+```
+
+Aplique:
+
+```bash
+git filter-repo --mailmap mailmap.txt
+```
+
+---
+
+### Caso C — Trocar nome e email ao mesmo tempo
+
+```bash
+git filter-repo \
+  --name-callback  'return name.replace(b"jdoe", b"John Doe")' \
+  --email-callback 'return email.replace(b"jdoe@unknown.com", b"john.doe@mycompany.com")'
+```
+
+Ou via `mailmap.txt` com nome e email combinados:
+
+```
+John Doe <john.doe@mycompany.com> <jdoe@unknown.com>
+Alice Smith <alice.smith@mycompany.com> <asmith@unknown.com>
+```
+
+```bash
+git filter-repo --mailmap mailmap.txt
+```
+
+---
+
+### Caso D — Trocar apenas para commits de um autor específico
+
+```bash
+git filter-repo --commit-callback '
+if commit.author_email == b"jdoe@unknown.com":
+    commit.author_name  = b"John Doe"
+    commit.author_email = b"john.doe@mycompany.com"
+    commit.committer_name  = b"John Doe"
+    commit.committer_email = b"john.doe@mycompany.com"
+'
+```
+
+---
+
+### Verificando o resultado
+
+```bash
+# Lista autores e emails únicos no histórico
+git log --pretty="%an <%ae>" | sort -u
+
+# Confirma que não sobrou nenhum @unknown.com
+git log --pretty="%ae" | sort -u | grep unknown
+```
+
+---
+
+### Fazendo push após reescrita
+
+O `git filter-repo` reescreve os hashes de todos os commits. É necessário force push:
+
+```bash
+git remote add origin https://github.com/flxlfx/order-service.git
+git push origin master --force
+```
+
+> **Atenção:** se outras pessoas já clonaram o repositório, elas precisarão descartar
+> a cópia local e clonar novamente — force push reescreve o histórico público.
+
+---
+
 ## Quando esse script NÃO é necessário
 
 Se o seu path TFS **é** um branch raiz (ex: `$/OrderService`), o `git tfs clone` padrão funciona:
