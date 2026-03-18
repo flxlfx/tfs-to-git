@@ -1,0 +1,14 @@
+# Mapeamento de autores TFS -> Git
+# Formato: nome_no_tfs = Nome Completo <email@empresa.com>
+#
+# O "nome_no_tfs" e exatamente o valor que aparece no campo "User"
+# ao rodar: tf history ... /format:detailed
+#
+# Linhas comecando com # sao ignoradas.
+
+jdoe         = John Doe       <john.doe@mycompany.com>
+asmith       = Alice Smith    <alice.smith@mycompany.com>
+rjohnson     = Robert Johnson <robert.johnson@mycompany.com>
+mwilliams    = Mary Williams  <mary.williams@mycompany.com>
+cbrown       = Charles Brown  <charles.brown@mycompany.com>
+ljones       = Laura Jones    <laura.jones@mycompany.com>
